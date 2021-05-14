@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Notyf } from 'notyf';
 
-import { auth, db } from '../../firebase';
+import { auth } from '../../firebase';
 
 import Logo from '../../components/Logo';
 import Input from '../../components/form/Input';
 import Button from '../../components/form/Button';
+
+import { doesEmailExists, createUser } from '../../services/user';
 
 import imgSeasons from '../../assets/images/seasons.svg';
 import registerIcon from '../../assets/images/icons/register.svg';
@@ -17,7 +19,6 @@ const AuthenticationPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
 
   const clearInputs = () => {
@@ -25,21 +26,22 @@ const AuthenticationPage = () => {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
-    setIsLoading(false);
   };
 
   const switchMode = () => {
     clearInputs();
+    setError('');
     setIsLoginMode(!isLoginMode);
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (!email || !password) return;
-
     setError('');
-    setIsLoading(true);
+
+    if (!email || !password) {
+      setError('Merci de remplir tous les champs.');
+      return;
+    }
 
     try {
       await auth.signInWithEmailAndPassword(email, password).then(() => {
@@ -49,12 +51,12 @@ const AuthenticationPage = () => {
       });
     } catch (err) {
       setError('Adresse email ou mot de passe invalide.');
-      setIsLoading(false);
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!fullName || !email) {
       setError('Merci de remplir tous les champs.');
@@ -69,8 +71,11 @@ const AuthenticationPage = () => {
       return;
     }
 
-    setError('');
-    setIsLoading(true);
+    const emailExists = await doesEmailExists(email);
+    if (emailExists) {
+      setError("L'adresse email est déjà utilisée.");
+      return;
+    }
 
     try {
       const createdUser = await auth
@@ -82,21 +87,9 @@ const AuthenticationPage = () => {
           return currentUser;
         });
       await createdUser.user.updateProfile({ displayName: fullName });
-      await db.collection('users').doc(createdUser.user.uid).set({
-        userId: createdUser.user.uid,
-        fullName,
-        email: email.toLowerCase(),
-        weatherLocations: [],
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+      await createUser(createdUser.user.uid, fullName, email);
     } catch (err) {
-      if (err.code === 'auth/email-already-in-use') {
-        setError("L'adresse email est déjà utilisée.");
-      } else {
-        setError("Impossile de s'inscrire pour le moment.");
-      }
-      setIsLoading(false);
+      setError("Impossile de s'inscrire pour le moment.");
     }
   };
 
@@ -109,7 +102,6 @@ const AuthenticationPage = () => {
             <h1 className="font-bold text-2xl my-4">
               {isLoginMode ? 'Connectez-vous' : 'Inscrivez-vous'}
             </h1>
-            {isLoading && <p>Loading...</p>}
             {error && <p className="text-red-500 mb-4">{error}</p>}
             <form onSubmit={isLoginMode ? handleLogin : handleRegister}>
               {!isLoginMode && (
@@ -156,7 +148,7 @@ const AuthenticationPage = () => {
                 submit
                 icon={isLoginMode ? unlockIcon : registerIcon}
                 label={isLoginMode ? 'Se connecter' : "S'inscrire"}
-                classes="bg-indigo-500 hover:bg-indigo-400 w-full"
+                classes="bg-indigo-500 hover:bg-indigo-400 w-full text-white"
               />
             </form>
             <div className="mt-4 font-medium">
