@@ -1,23 +1,23 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import Logo from './Logo';
+import { auth } from '../firebase';
 
-const Header = ({ user }) => {
+const Header = () => {
+  const logout = () => auth.signOut();
+
   return (
-    <header className="flex items-center justify-between pb-5 mb-5 border-b border-gray-200">
+    <header className="sm:flex sm:items-center sm:justify-between pb-5 mb-5 border-b border-gray-200">
       <Logo />
-      <button type="button" className="font-medium">
-        {user.email}
+      <button
+        type="button"
+        className="mt-3 sm:mt-0 font-medium text-red-500"
+        onClick={logout}
+      >
+        Se déconnecter
       </button>
     </header>
   );
-};
-
-Header.propTypes = {
-  user: PropTypes.shape({
-    email: PropTypes.string.isRequired,
-  }),
 };
 
 export default Header;

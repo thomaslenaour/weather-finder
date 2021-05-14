@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.1.10",
     "autoprefixer": "^9",
     "firebase": "^8.6.1",
+    "google-map-react": "^2.1.9",
     "notyf": "^3.9.0",
     "postcss": "^7",
     "prop-types": "^15.7.2",
