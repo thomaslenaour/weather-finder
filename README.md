@@ -18,7 +18,7 @@ Before starting the project, you must configure **environment variables** in ord
 
 You have a `.env.example` file at the root which is a sample file showing you the environment variables you need to configure
 
-Copy the contents of the `.env.example` file and create a `.env` file at the root in which you paste all the variables.
+Copy the content of the `.env.example` file and create a `.env` file at the root in which you paste all the variables.
 
 ```
 REACT_APP_FIREBASE_API_KEY=""
