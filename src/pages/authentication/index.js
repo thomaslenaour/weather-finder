@@ -95,8 +95,8 @@ const AuthenticationPage = () => {
 
   return (
     <div className="main-container">
-      <div className="flex items-center justify-center h-screen py-5">
-        <div className="grid md:grid-cols-2 items-center gap-8 max-w-6xl">
+      <div className="md:flex md:items-center md:justify-center md:h-screen py-5">
+        <div className="grid md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
           <div>
             <Logo />
             <h1 className="font-bold text-2xl my-4">
