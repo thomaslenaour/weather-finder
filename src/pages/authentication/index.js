@@ -127,7 +127,11 @@ const AuthenticationPage = () => {
               <Input
                 label="Mot de passe"
                 name="password"
-                placeholder="Mot de passe (min. 6 caractères)"
+                placeholder={
+                  isLoginMode
+                    ? 'Mot de passe'
+                    : 'Mot de passe (min. 6 caractères)'
+                }
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.currentTarget.value)}
